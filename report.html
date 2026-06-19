@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>দোকান ম্যানেজার - রিপোর্ট</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#0F6E56;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --blue:#185FA5;--blue-light:#E6F1FB;
+  --bg:#F9F8F5;--white:#fff;--border:#D3D1C7;
+  --text:#2C2C2A;--text3:#888780;--radius:12px;
+}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100}
+.nav-btn{flex:1;padding:8px 4px 10px;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:11px;border-top:2px solid transparent}
+.nav-btn.active{color:var(--green);border-top-color:var(--green)}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.header{background:var(--green);color:#fff;padding:14px 16px}
+.header h1{font-size:20px;font-weight:700}
+.container{padding:12px 12px 80px}
+.card{background:var(--white);border:1px solid var(--border);padding:16px;border-radius:var(--radius);margin-bottom:12px}
+
+/* গ্রিড লেআউট */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.stat-box {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* চার্ট স্টাইলিং */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  padding: 10px;
+}
+.chart-box {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+.chart-html {
+  transform: rotate(-90deg);
+}
+.chart-bg {
+  fill: none;
+  stroke: #f1efe8;
+  stroke-width: 18;
+}
+.chart-fill-sale {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 18;
+  stroke-dasharray: 440;
+  stroke-dashoffset: 440;
+  transition: stroke-dashoffset 0.5s ease;
+}
+.chart-fill-profit {
+  fill: none;
+  stroke: var(--green-dark);
+  stroke-width: 18;
+  stroke-dasharray: 440;
+  stroke-dashoffset: 440;
+  transition: stroke-dashoffset 0.5s ease;
+}
+.chart-center-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.chart-legends {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 15px;
+  font-size: 13px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* টেবিল স্টাইল */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+.report-table th, .report-table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.report-table th {
+  font-weight: 600;
+  color: var(--text3);
+}
+</style>
+</head>
+<body>
+
+<div class="header"><h1 id="shop-name-header">দোকান ম্যানেজার</h1></div>
+
+<div class="container">
+  <h3 style="margin-bottom:12px;">মুনাফা ও হিসাব রিপোর্ট</h3>
+  <div id="report-content"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    হোম
+  </a>
+  <a href="sales2.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
+    বিক্রয়
+  </a>
+  <a href="inventory.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    স্টক
+  </a>
+  <a href="due.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    বাকি
+  </a>
+  <a href="report.html" class="nav-btn active">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    রিপোর্ট
+  </a>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+// আপনার Firebase Config কোডটি এখানে দিন
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCjgxzZQvpqdUNnAlr81UEwp5E6Rf6kbq4",
+
+  authDomain: "dukan-manager-1aa7a.firebaseapp.com",
+
+  projectId: "dukan-manager-1aa7a",
+
+  storageBucket: "dukan-manager-1aa7a.firebasestorage.app",
+
+  messagingSenderId: "765717197902",
+
+  appId: "1:765717197902:web:21b0abeddba94e17eebf1f",
+
+  measurementId: "G-BS8TTQFBFN"
+
+};
+
+// Firebase ইনিশিয়ালাইজেশন
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let state = { settings:{shopName:'দোকান ম্যানেজার'}, sales:[], dues:[], products:[] };
+function bn(n){return String(Math.round(n)).replace(/[0-9]/g,c=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][c])}
+
+// 🔐 অথেন্টিকেশন এবং রিয়েল-টাইম ডাটা সিঙ্ক গেটওয়ে
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.collection("users").doc(user.uid).get().then(doc => {
+      if (doc.exists) {
+        state = doc.data();
+        localStorage.setItem('dukan_state', JSON.stringify(state));
+      } else {
+        const s = localStorage.getItem('dukan_state');
+        if(s){try{state=JSON.parse(s)}catch(e){}}
+      }
+      initializeAppUI();
+    }).catch(e => {
+      const s = localStorage.getItem('dukan_state');
+      if(s){try{state=JSON.parse(s)}catch(e){}}
+      initializeAppUI();
+    });
+  } else {
+    window.location.href = 'login.html';
+  }
+});
+
+function initializeAppUI(){
+  document.getElementById('shop-name-header').textContent = state.settings?.shopName || 'দোকান ম্যানেজার';
+  renderReport();
+}
+
+function renderReport(){
+  // মূল গণনা সমূহ
+  const totalRevenue = state.sales ? state.sales.reduce((a,s)=>a+s.total,0) : 0;
+  const totalProfit = state.sales ? state.sales.reduce((a,s)=>a+s.profit,0) : 0;
+
+  // বাকি (Due) হিসাব (যা এখনো পরিশোধ করা হয়নি)
+  const totalDue = state.dues ? state.dues.reduce((a,d)=>a+(parseFloat(d.remaining)||0),0) : 0;
+
+  // ক্যাশ ইন হ্যান্ড (মোট বিক্রয় থেকে বাকি বাদ দিলে যা থাকে)
+  const cashInHand = Math.max(0, totalRevenue - totalDue);
+
+  // ইনভেন্টরি সামারি
+  const totalItemsCount = state.products ? state.products.length : 0;
+  const totalStockCount = state.products ? state.products.reduce((a,p)=>a+(parseFloat(p.stock)||0),0) : 0;
+
+  // চার্টের ড্যাশ-অফসেট হিসাব
+  let saleOffset = 440;
+  let profitOffset = 440;
+  if (totalRevenue > 0) {
+    saleOffset = 0;
+    const profitPercentage = totalProfit / totalRevenue;
+    profitOffset = 440 - (440 * profitPercentage);
+  }
+
+  document.getElementById('report-content').innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box" style="background: var(--green-light);">
+        <span style="font-size:12px; color:var(--text3); display:block;">সর্বমোট বিক্রয়</span>
+        <strong style="font-size:18px; color:var(--green-dark);">৳${bn(totalRevenue)}</strong>
+      </div>
+      <div class="stat-box" style="background: #e6f7f0;">
+        <span style="font-size:12px; color:var(--text3); display:block;">সর্বমোট লাভ</span>
+        <strong style="font-size:18px; color:var(--green-dark);">৳${bn(totalProfit)}</strong>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box" style="background: var(--red-light);">
+        <span style="font-size:12px; color:var(--text3); display:block;">সর্বমোট বাকি (পাওনা)</span>
+        <strong style="font-size:18px; color:var(--red);">৳${bn(totalDue)}</strong>
+      </div>
+      <div class="stat-box" style="background: var(--blue-light);">
+        <span style="font-size:12px; color:var(--text3); display:block;">ক্যাশ ইন হ্যান্ড</span>
+        <strong style="font-size:18px; color:var(--blue);">৳${bn(cashInHand)}</strong>
+      </div>
+    </div>
+
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px;">
+      <div>
+        <span style="font-size:13px; color:var(--text3);">মোট পণ্য আইটেম:</span>
+        <strong style="font-size:14px; color:var(--text); margin-left:4px;">${bn(totalItemsCount)} টি</strong>
+      </div>
+      <div style="border-left: 1px solid var(--border); height: 20px;"></div>
+      <div>
+        <span style="font-size:13px; color:var(--text3);">মোট স্টক পরিমাণ:</span>
+        <strong style="font-size:14px; color:var(--text); margin-left:4px;">${bn(totalStockCount)} টি/কেজি</strong>
+      </div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <strong style="font-size:15px; display:block; margin-bottom:5px;">বিক্রয় বনাম লাভ গ্রাফ</strong>
+
+      <div class="chart-container">
+        <div class="chart-box">
+          <svg class="chart-html" width="160" height="160" viewBox="0 0 160 160">
+            <circle class="chart-bg" cx="80" cy="80" r="70"></circle>
+            <circle class="chart-fill-sale" cx="80" cy="80" r="70" style="stroke-dashoffset: ${saleOffset};"></circle>
+            <circle class="chart-fill-profit" cx="80" cy="80" r="70" style="stroke-dashoffset: ${profitOffset};"></circle>
+          </svg>
+          <div class="chart-center-text">
+            <span>লাভের হার</span>
+            <span style="font-size:16px; font-weight:700; color:var(--green-dark); margin-top:2px;">
+              ${totalRevenue > 0 ? bn((totalProfit / totalRevenue) * 100) + '%' : '০%'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-legends">
+        <div class="legend-item">
+          <div class="legend-color" style="background:var(--green);"></div>
+          <span>বিক্রয়</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background:var(--green-dark);"></div>
+          <span>লাভ</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong style="font-size:14px; display:block; margin-bottom:6px;">হিসাবের বিবরণী</strong>
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>খাত</th>
+            <th style="text-align: right;">পরিমাণ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>মোট বেচাকেনা (Revenue)</td>
+            <td style="text-align: right; font-weight:600; color:var(--green);">৳${bn(totalRevenue)}</td>
+          </tr>
+          <tr>
+            <td>নগদ জমা (Cash Collected)</td>
+            <td style="text-align: right; font-weight:600; color:var(--blue);">৳${bn(cashInHand)}</td>
+          </tr>
+          <tr>
+            <td>বাকি খাতা (Due Amount)</td>
+            <td style="text-align: right; font-weight:600; color:var(--red);">৳${bn(totalDue)}</td>
+          </tr>
+          <tr style="border-top:2px solid var(--border);">
+            <td><strong>নিট লাভ (Net Profit)</strong></td>
+            <td style="text-align: right; font-weight:700; color:var(--green-dark);">৳${bn(totalProfit)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+</script>
+</body>
+</html>

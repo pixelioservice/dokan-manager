@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>দোকান ম্যানেজার - হোম</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#0F6E56;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --blue:#185FA5;--blue-light:#E6F1FB;
+  --gray:#888780;--gray-light:#F1EFE8;--gray-dark:#444441;
+  --bg:#F9F8F5;--white:#fff;
+  --text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;
+  --border:#D3D1C7;--radius:12px;--radius-sm:8px;
+}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+button{font-family:'Hind Siliguri',sans-serif;cursor:pointer;border:none;outline:none}
+input,select{font-family:'Hind Siliguri',sans-serif;font-size:14px}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100}
+.nav-btn{flex:1;padding:8px 4px 10px;background:none;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:11px;border-top:2px solid transparent}
+.nav-btn.active{color:var(--green);border-top-color:var(--green)}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.header{background:var(--green);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:700}
+.logout-btn{background:rgba(255,255,255,0.15);color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.container{padding:12px 12px 80px}
+
+.dashboard-title{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:var(--text)}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.dash-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;display:flex;flex-direction:column;gap:4px}
+.dash-card-title{font-size:12px;color:var(--text2);font-weight:500}
+.dash-card-value{font-size:18px;font-weight:700;color:var(--text)}
+
+.quick-action-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;margin-bottom:16px}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.action-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;text-decoration:none;color:var(--text);font-weight:600;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:6px}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 30px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:var(--gray-light);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+.form-group{margin-bottom:12px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+.form-input{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;outline:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--radius-sm);font-size:14px;font-weight:600}
+.btn-primary{background:var(--green);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.btn-full{width:100%}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 id="shop-name-header">দোকান ম্যানেজার</h1>
+  <button class="logout-btn" onclick="handleLogout()">লগআউট</button>
+</div>
+
+<div class="container">
+  <div class="dashboard-title">📊 আজকের ড্যাশবোর্ড</div>
+
+  <div class="card-grid">
+    <div class="dash-card" style="border-left:4px solid var(--green)">
+      <span class="dash-card-title">আজকের মোট বিক্রি</span>
+      <span class="dash-card-value" id="dash-sales" style="color:var(--green-dark)">৳০</span>
+    </div>
+    <div class="dash-card" style="border-left:4px solid var(--blue)">
+      <span class="dash-card-title">আজকের নগদ জমা</span>
+      <span class="dash-card-value" id="dash-cash" style="color:var(--blue)">৳০</span>
+    </div>
+    <div class="dash-card" style="border-left:4px solid var(--red)">
+      <span class="dash-card-title">আজকের বাকি খাতা</span>
+      <span class="dash-card-value" id="dash-due" style="color:var(--red)">৳০</span>
+    </div>
+    <div class="dash-card" style="border-left:4px solid var(--amber)">
+      <span class="dash-card-title">আজকের নিট লাভ</span>
+      <span class="dash-card-value" id="dash-profit" style="color:var(--amber)">৳০</span>
+    </div>
+  </div>
+
+  <div class="quick-action-section">
+    <div class="dashboard-title" style="margin-bottom:0">⚡ কুইক অ্যাকশন</div>
+    <div class="quick-grid">
+      <a href="sales2.html" class="action-box">🛒 নতুন বিক্রয়</a>
+      <a href="inventory.html" class="action-box">📦 স্টক আপডেট</a>
+      <button class="action-box" onclick="openSettingsModal()" style="width:100%">⚙️ দোকান সেটিংস</button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-btn active">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    হোম
+  </a>
+  <a href="sales2.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
+    বিক্রয়
+  </a>
+  <a href="inventory.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    স্টক
+  </a>
+  <a href="due.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    বাকি
+  </a>
+  <a href="report.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    রিপোর্ট
+  </a>
+</nav>
+
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-title">⚙️ দোকান সেটিংস <button class="modal-close" onclick="closeModal('settings-modal')">✕</button></div>
+    <div class="form-group">
+      <label class="form-label">দোকানের নাম</label>
+      <input type="text" class="form-input" id="set-shop-name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">কম স্টকের অ্যালার্ট লিমিট (Low Stock Alert)</label>
+      <input type="number" class="form-input" id="set-low-stock">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveSettings()" style="margin-bottom:16px">সেটিংস সংরক্ষণ করুন</button>
+
+    <hr style="border:0; border-top:1px dashed var(--border); margin-bottom:16px;">
+
+    <div style="background:#fff5f5; border:1px solid #f8d7da; padding:12px; border-radius:var(--radius-sm);">
+      <h4 style="color:var(--red); font-size:14px; margin-bottom:4px;">⚠️ বিপদজনক জোন (Danger Zone)</h4>
+      <p style="font-size:12px; color:var(--text2); margin-bottom:10px;">ফ্যাক্টরি রিসেট করলে আপনার সব পেজের সমস্ত ডাটা (পণ্য, বিক্রি, বাকি) চিরতরে মুছে যাবে এবং প্রথম থেকে শুরু হবে।</p>
+      <button class="btn btn-danger btn-full" id="reset-init-btn" onclick="openFactoryResetModal()">Factory Reset</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reset-confirm-modal" style="z-index: 300;">
+  <div class="modal" style="border-radius: 16px 16px 16px 16px; width:92%; max-width:400px; margin:auto; margin-bottom: 20vh;">
+    <div class="modal-title" style="color:var(--red);">⚠️ রিসেট নিশ্চিত করুন <button class="modal-close" onclick="closeModal('reset-confirm-modal')">✕</button></div>
+    <p style="font-size:13px; margin-bottom:12px; color:var(--text);">সব ডাটা ডিলিট করতে আপনার অ্যাকাউন্টের **লগইন পাসওয়ার্ডটি** লিখুন:</p>
+    <div class="form-group">
+      <input type="password" class="form-input" id="reset-password-input" placeholder="আপনার পাসওয়ার্ড দিন">
+    </div>
+    <button class="btn btn-danger btn-full" id="reset-submit-btn" onclick="processFactoryReset()">সম্পূর্ণ ডাটা মুছে ফেলুন</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+// আপনার Firebase Config কোডটি এখানে দিন
+const firebaseConfig = {
+  apiKey: "AIzaSyCjgxzZQvpqdUNnAlr81UEwp5E6Rf6kbq4",
+  authDomain: "hisab-khata-cf78c.firebaseapp.com",
+  projectId: "hisab-khata-cf78c",
+  storageBucket: "hisab-khata-cf78c.firebasestorage.app",
+  messagingSenderId: "305149303536",
+  appId: "1:305149303536:web:86f67fcb3c10a30b209867"
+};
+
+
+// Firebase ইনিশিয়ালাইজেশন
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let state = { settings:{shopName:'দোকান ম্যানেজার', lowStockThreshold:5}, products:[], sales:[], dues:[] };
+
+function bn(n){return String(Math.round(n)).replace(/[0-9]/g,c=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][c])}
+function bnMoney(n){return '৳'+bn(n)}
+function today(){return new Date().toISOString().split('T')[0]}
+
+// 🔐 অথেন্টিকেশন গেটওয়ে এবং ডেটা লোড
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.collection("users").doc(user.uid).get().then(doc => {
+      if (doc.exists) {
+        state = doc.data();
+        localStorage.setItem('dukan_state', JSON.stringify(state));
+      } else {
+        const s = localStorage.getItem('dukan_state');
+        if(s){try{state=JSON.parse(s)}catch(e){}}
+      }
+      initializeAppUI();
+    }).catch(e => {
+      const s = localStorage.getItem('dukan_state');
+      if(s){try{state=JSON.parse(s)}catch(e){}}
+      initializeAppUI();
+    });
+  } else {
+    window.location.href = 'login.html';
+  }
+});
+
+function initializeAppUI(){
+  document.getElementById('shop-name-header').textContent = state.settings?.shopName || 'দোকান ম্যানেজার';
+  calculateDashboardStats();
+}
+
+function calculateDashboardStats(){
+  const t = today();
+  const todaySalesList = (state.sales || []).filter(s => s.date === t);
+  const todayDuesList = (state.dues || []).filter(d => d.date === t);
+
+  const totalSales = todaySalesList.reduce((a,s) => a + s.total, 0);
+  const totalProfit = todaySalesList.reduce((a,s) => a + s.profit, 0);
+  const totalDue = todayDuesList.reduce((a,d) => a + (parseFloat(d.remaining) || 0), 0);
+  const totalCash = Math.max(0, totalSales - totalDue);
+
+  document.getElementById('dash-sales').textContent = bnMoney(totalSales);
+  document.getElementById('dash-cash').textContent = bnMoney(totalCash);
+  document.getElementById('dash-due').textContent = bnMoney(totalDue);
+  document.getElementById('dash-profit').textContent = bnMoney(totalProfit);
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+function openSettingsModal(){
+  document.getElementById('set-shop-name').value = state.settings?.shopName || 'দোকান ম্যানেজার';
+  document.getElementById('set-low-stock').value = state.settings?.lowStockThreshold || 5;
+  openModal('settings-modal');
+}
+
+function saveSettings(){
+  if(!state.settings) state.settings = {};
+  state.settings.shopName = document.getElementById('set-shop-name').value.trim() || 'দোকান ম্যানেজার';
+  state.settings.lowStockThreshold = parseInt(document.getElementById('set-low-stock').value) || 5;
+
+  localStorage.setItem('dukan_state', JSON.stringify(state));
+  const user = auth.currentUser;
+  if(user){
+    db.collection("users").doc(user.uid).set(state)
+      .then(() => {
+        closeModal('settings-modal');
+        initializeAppUI();
+      });
+  }
+}
+
+function handleLogout(){
+  if(confirm("আপনি কি নিশ্চিতভাবে লগআউট করতে চান?")){
+    auth.signOut().then(() => {
+      localStorage.removeItem('dukan_state');
+      window.location.href = 'login.html';
+    });
+  }
+}
+
+// 💥 ফ্যাক্টরি রিসেট ফাংশনসমূহ
+function openFactoryResetModal(){
+  document.getElementById('reset-password-input').value = '';
+  openModal('reset-confirm-modal');
+}
+
+function processFactoryReset() {
+  const passwordInput = document.getElementById('reset-password-input');
+  const submitBtn = document.getElementById('reset-submit-btn');
+  const password = passwordInput.value;
+
+  if (!password) {
+    alert("❌ অনুগ্রহ করে আপনার লগইন পাসওয়ার্ডটি দিন!");
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("❌ ইউজার সেশন পাওয়া যায়নি। অনুগ্রহ করে আবার লগইন করুন।");
+    return;
+  }
+
+  // বাটনটি ডিজেবল করা ও লোডিং টেক্সট দেওয়া জাতে ইউজার বুঝতে পারে ব্যাকগ্রাউন্ডে কাজ চলছে
+  submitBtn.disabled = true;
+  submitBtn.textContent = "রিসেট হচ্ছে, দয়া করে অপেক্ষা করুন...";
+  submitBtn.style.opacity = "0.6";
+
+  // পাসওয়ার্ড রি-অথেন্টিকেশন চেক
+  const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
+
+  user.reauthenticateWithCredential(credential)
+    .then(() => {
+      // পাসওয়ার্ড সঠিক হলে স্টেট একদম খালি (ফ্যাক্টরি মোড) করে দেওয়া
+      state = {
+        settings: {
+          shopName: 'দোকান ম্যানেজার',
+          lowStockThreshold: 5
+        },
+        products: [],
+        sales: [],
+        dues: []
+      };
+
+      // লোকাল স্টোরেজ সম্পূর্ণ ক্লিয়ার ও রিসেট করা
+      localStorage.setItem('dukan_state', JSON.stringify(state));
+
+      // ক্লাউড ফায়ারবেস ডাটাবেজ আপডেট নিশ্চিত করা
+      db.collection("users").doc(user.uid).set(state)
+        .then(() => {
+          // রিয়েল ব্রাউজার প্রম্পট দিয়ে সাকসেস মেসেজ নিশ্চিত করা
+          alert("💥 Factory Reset Done!\n\nআপনার সমস্ত পেজের ডাটা ক্লাউড ও লোকাল স্টোরেজ থেকে চিরতরে মুছে ফেলা হয়েছে। অ্যাপটি সফলভাবে প্রথম থেকে শুরু হয়েছে।");
+
+          // বাটন ও মোডাল রিসেট
+          submitBtn.disabled = false;
+          submitBtn.textContent = "সম্পূর্ণ ডাটা মুছে ফেলুন";
+          submitBtn.style.opacity = "1";
+
+          closeModal('reset-confirm-modal');
+          closeModal('settings-modal');
+          initializeAppUI();
+        })
+        .catch(err => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "সম্পূর্ণ ডাটা মুছে ফেলুন";
+          submitBtn.style.opacity = "1";
+          alert("❌ ডাটাবেজ সার্ভার রিসেট করতে ব্যর্থ হয়েছে: " + err.message);
+        });
+    })
+    .catch(error => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "সম্পূর্ণ ডাটা মুছে ফেলুন";
+      submitBtn.style.opacity = "1";
+      alert("❌ ভুল পাসওয়ার্ড! পাসওয়ার্ডটি মিলছে না, তাই ডাটা রিসেট করা সম্ভব হয়নি।");
+    });
+}
+</script>
+</body>
+</html>

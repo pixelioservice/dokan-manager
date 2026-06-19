@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>দোকান ম্যানেজার - বিক্রয়</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#0F6E56;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --blue:#185FA5;--blue-light:#E6F1FB;
+  --gray:#888780;--gray-light:#F1EFE8;--gray-dark:#444441;
+  --bg:#F9F8F5;--white:#fff;
+  --text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;
+  --border:#D3D1C7;--radius:12px;--radius-sm:8px;
+}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+button{font-family:'Hind Siliguri',sans-serif;cursor:pointer;border:none;outline:none}
+input,select{font-family:'Hind Siliguri',sans-serif;font-size:14px}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100}
+.nav-btn{flex:1;padding:8px 4px 10px;background:none;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:11px;border-top:2px solid transparent}
+.nav-btn.active{color:var(--green);border-top-color:var(--green)}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.header{background:var(--green);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:700}
+.container{padding:12px 12px 80px}
+.section-title{font-size:14px;font-weight:600;color:var(--text)}
+
+.list-item{background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--border);padding:11px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.list-item-left{flex:1}
+.list-item-name{font-size:14px;font-weight:600}
+.list-item-sub{font-size:12px;color:var(--text3);margin-top:2px}
+
+.form-group{margin-bottom:12px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+.form-input{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;outline:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--radius-sm);font-size:14px;font-weight:600}
+.btn-primary{background:var(--green);color:#fff}
+.btn-danger-outline{background:var(--red-light);color:var(--red);border:1px solid #f5c6cb;}
+.btn-full{width:100%}
+.btn-sm{padding:6px 10px;font-size:12px}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 30px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:var(--gray-light);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+.cart-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px}
+.cart-item-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cart-item-name{font-size:14px;font-weight:600}
+.cart-item-remove{background:var(--red-light);color:var(--red);border-radius:6px;width:26px;height:26px}
+.cart-item-row{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:end}
+.cart-field label{font-size:12px;font-weight:600;color:var(--text);display:block;margin-bottom:4px}
+.cart-field input{width:100%;border:1px solid var(--border);border-radius:6px;padding:8px 10px;outline:none}
+.cart-unit-box{background:var(--gray-light);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--gray-dark);min-width:45px;text-align:center;height:37px;display:flex;align-items:center;justify-content:center}
+.search-item{padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.search-select-container{display:flex;gap:8px;align-items:center}
+
+/* Due dynamic layout style */
+.due-info-section {
+  background: #fff5f5;
+  border: 1px solid #f8d7da;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 id="shop-name-header">দোকান ম্যানেজার</h1>
+</div>
+
+<div class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:6px">
+    <div class="section-title">বিক্রয় রেকর্ড</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-danger-outline btn-sm" onclick="clearSalesHistory()" title="ইতিহাস মুছুন">🗑️ ইতিহাস মুছুন</button>
+      <button class="btn btn-primary btn-sm" onclick="openSaleModalFn()">+ নতুন বিক্রয়</button>
+    </div>
+  </div>
+
+  <div style="margin-bottom:12px">
+    <select class="form-input" id="sales-filter" onchange="renderSales()">
+      <option value="today">আজকে</option>
+      <option value="week">এই সপ্তাহ</option>
+      <option value="month">এই মাস</option>
+      <option value="all">সব</option>
+    </select>
+  </div>
+
+  <div id="sales-list"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    হোম
+  </a>
+  <a href="sales2.html" class="nav-btn active">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
+    বিক্রয়
+  </a>
+  <a href="inventory.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    স্টক
+  </a>
+  <a href="due.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    বাকি
+  </a>
+  <a href="report.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    রিপোর্ট
+  </a>
+</nav>
+
+<div class="modal-overlay" id="sale-modal">
+  <div class="modal">
+    <div class="modal-title">🛒 নতুন বিক্রয় <button class="modal-close" onclick="closeModal('sale-modal')">✕</button></div>
+    <div id="sale-alert"></div>
+
+    <div class="form-group" style="position:relative">
+      <label class="form-label">পণ্য খুঁজুন বা সিলেক্ট করুন</label>
+      <div class="search-select-container">
+        <input type="text" class="form-input" id="sale-search" placeholder="🔍 পণ্যের নাম লিখুন..." oninput="renderProductSearch()" autocomplete="off" style="flex: 1.2;">
+
+        <select class="form-input" id="sale-select-dropdown" onchange="handleDropdownSelect(this)" style="flex: 1;">
+          <option value="">পণ্য সিলেক্ট করুন</option>
+        </select>
+      </div>
+      <div id="sale-search-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--white);border:1px solid var(--green);z-index:300;max-height:200px;overflow-y:auto"></div>
+    </div>
+
+    <div id="sale-cart-wrap" style="display:none;margin-bottom:12px">
+      <div id="sale-cart-items"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">পেমেন্ট পদ্ধতি</label>
+      <select class="form-input" id="sale-payment" onchange="togglePaymentFields()">
+        <option value="cash">নগদ</option>
+        <option value="due">বাকি</option>
+        <option value="bkash">বিকাশ</option>
+        <option value="nagad">নগদ (মোবাইল)</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="normal-customer-group">
+      <label class="form-label">গ্রাহকের নাম (ঐচ্ছিক)</label>
+      <input type="text" class="form-input" id="sale-customer" placeholder="নগদ গ্রাহক">
+    </div>
+
+    <div id="due-fields-section" class="due-info-section" style="display:none; margin-bottom:12px;">
+      <div class="form-group">
+        <label class="form-label" style="color: var(--red);">গ্রাহকের নাম <span style="color:red;">*</span></label>
+        <input type="text" class="form-input" id="due-customer-name" placeholder="নাম লিখুন (বাধ্যতামূলক)" oninput="renderCartSummary()">
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="color: var(--red);">মোবাইল নম্বর <span style="color:red;">*</span></label>
+        <input type="tel" class="form-input" id="due-customer-phone" placeholder="মোবাইল নম্বর (বাধ্যতামূলক)" oninput="renderCartSummary()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ঠিকানা (ঐচ্ছিক)</label>
+        <input type="text" class="form-input" id="due-customer-address" placeholder="ঠিকানা লিখুন">
+      </div>
+      <div class="form-group">
+        <label class="form-label">জমা (ঐচ্ছিক)</label>
+        <input type="number" class="form-input" id="due-initial-paid" placeholder="০" min="0" oninput="renderCartSummary()">
+      </div>
+    </div>
+
+    <div style="background:var(--green-light);padding:12px;margin-bottom:14px;border-radius:6px">
+      <div style="display:flex;justify-content:space-between"><span>মোট বিক্রয়</span><span id="sale-total-display" style="font-weight:700">৳০</span></div>
+    </div>
+
+    <button class="btn btn-primary btn-full" onclick="addSale()" id="sale-submit-btn" disabled style="opacity:.5">বিক্রয় সংরক্ষণ করুন</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+// আপনার Firebase Config কোডটি এখানে দিন
+const firebaseConfig = {
+  apiKey: "AIzaSyCjgxzZQvpqdUNnAlr81UEwp5E6Rf6kbq4",
+  authDomain: "hisab-khata-cf78c.firebaseapp.com",
+  projectId: "hisab-khata-cf78c",
+  storageBucket: "hisab-khata-cf78c.firebasestorage.app",
+  messagingSenderId: "305149303536",
+  appId: "1:305149303536:web:86f67fcb3c10a30b209867"
+};
+
+// Firebase ইনিশিয়ালাইজেশন
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let state = { settings:{shopName:'দোকান ম্যানেজার'}, products:[], sales:[], dues:[] };
+let cart = [];
+
+function loadDefaults(){
+  // ডিফল্ট কোনো লোড প্রয়োজন হলে এখানে প্রসেস হবে
+}
+
+function save(){
+  localStorage.setItem('dukan_state', JSON.stringify(state));
+
+  // ক্লাউডে রিয়েল-টাইম সিঙ্কআপ
+  const user = auth.currentUser;
+  if(user){
+    db.collection("users").doc(user.uid).set(state)
+      .catch(e => console.error("ক্লাউড ব্যাকআপ ব্যর্থ হয়েছে:", e));
+  }
+}
+
+function bn(n){return String(Math.round(n)).replace(/[0-9]/g,c=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][c])}
+function bnMoney(n){return '৳'+bn(n)}
+function today(){return new Date().toISOString().split('T')[0]}
+function dateLabel(dateStr){ const d=new Date(dateStr); return bn(d.getDate())+' '+['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'][d.getMonth()]+', '+bn(d.getFullYear());}
+
+// 🔐 অথেন্টিকেশন এবং রিয়েল-টাইম ডাটা সিঙ্ক গেটওয়ে
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.collection("users").doc(user.uid).get().then(doc => {
+      if (doc.exists) {
+        state = doc.data();
+        localStorage.setItem('dukan_state', JSON.stringify(state));
+      } else {
+        const s = localStorage.getItem('dukan_state');
+        if(s){try{state=JSON.parse(s)}catch(e){}}
+      }
+      initializeAppUI();
+    }).catch(e => {
+      const s = localStorage.getItem('dukan_state');
+      if(s){try{state=JSON.parse(s)}catch(e){}}
+      initializeAppUI();
+    });
+  } else {
+    window.location.href = 'login.html';
+  }
+});
+
+function initializeAppUI(){
+  document.getElementById('shop-name-header').textContent = state.settings?.shopName || 'দোকান ম্যানেজার';
+  renderSales();
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+function renderSales(){
+  const f=document.getElementById('sales-filter').value;
+  const now=new Date(), t=today();
+  const filtered = (state.sales || []).filter(s=>{
+    if(f==='today') return s.date===t;
+    if(f==='week') return ((now-new Date(s.date))/864e5)<=7;
+    if(f==='month') return new Date(s.date).getMonth()===now.getMonth();
+    return true;
+  }).slice().reverse();
+
+  const el=document.getElementById('sales-list');
+  if(!filtered.length){el.innerHTML='<div class="empty"><p>কোনো বিক্রয় নেই</p></div>'; return;}
+  el.innerHTML=filtered.map(s=>`
+    <div class="list-item">
+      <div class="list-item-left">
+        <div class="list-item-name">${s.productName}</div>
+        <div class="list-item-sub">${dateLabel(s.date)} · ${bn(s.qty)} ${s.unit} · ${{cash:'নগদ',due:'বাকি',bkash:'বিকাশ',nagad:'নগদ মোবাইল'}[s.payment]||s.payment}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700;color:var(--green-dark)">${bnMoney(s.total)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function clearSalesHistory(){
+  if(confirm("আপনি কি নিশ্চিতভাবে সব বিক্রয়ের ইতিহাস মুছে ফেলতে চান? এটি আর ফেরত আনা যাবে না।")){
+    state.sales = [];
+    save();
+    renderSales();
+  }
+}
+
+function populateSelectDropdown(){
+  const dropdown = document.getElementById('sale-select-dropdown');
+  dropdown.innerHTML = '<option value="">পণ্য সিলেক্ট করুন</option>';
+  const availableProducts = (state.products || []).filter(p => p.stock > 0);
+  availableProducts.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.name} (${bnMoney(p.sellPrice)})`;
+    dropdown.appendChild(opt);
+  });
+}
+
+function togglePaymentFields() {
+  const payment = document.getElementById('sale-payment').value;
+  const dueSection = document.getElementById('due-fields-section');
+  const normalGroup = document.getElementById('normal-customer-group');
+
+  if (payment === 'due') {
+    dueSection.style.display = 'block';
+    normalGroup.style.display = 'none';
+  } else {
+    dueSection.style.display = 'none';
+    normalGroup.style.display = 'block';
+  }
+  renderCartSummary();
+}
+
+function openSaleModalFn(){
+  cart=[];
+  document.getElementById('sale-search').value='';
+  document.getElementById('sale-search-dropdown').style.display='none';
+  document.getElementById('sale-customer').value='';
+  document.getElementById('sale-payment').value='cash';
+  document.getElementById('due-customer-name').value='';
+  document.getElementById('due-customer-phone').value='';
+  document.getElementById('due-customer-address').value='';
+  document.getElementById('due-initial-paid').value='';
+  togglePaymentFields();
+  populateSelectDropdown();
+  renderCart();
+  openModal('sale-modal');
+}
+
+function renderProductSearch(){
+  const q=document.getElementById('sale-search').value.trim().toLowerCase();
+  const dd=document.getElementById('sale-search-dropdown');
+  if(!q){dd.style.display='none';return;}
+  const results=(state.products || []).filter(p=>p.name.toLowerCase().includes(q) && p.stock>0);
+  if(!results.length){ dd.innerHTML='<div style="padding:10px">পাওয়া যায়নি</div>'; dd.style.display='block'; return;}
+  dd.innerHTML=results.map(p=>`<div class="search-item" onclick="addToCart(${p.id})"><div>${p.name}</div><strong>${bnMoney(p.sellPrice)}</strong></div>`).join('');
+  dd.style.display='block';
+}
+
+function handleDropdownSelect(selectElement) {
+  const id = selectElement.value;
+  if(id) {
+    addToCart(parseInt(id));
+    selectElement.value = "";
+  }
+}
+
+function addToCart(id){
+  const p=(state.products || []).find(x=>x.id===id);
+  if(!p)return;
+  const existingIndex=cart.findIndex(c=>c.productId===id);
+  if(existingIndex > -1){
+    const existingItem = cart.splice(existingIndex, 1)[0];
+    existingItem.qty = Math.min(existingItem.qty+1, p.stock);
+    cart.unshift(existingItem);
+  }
+  else {
+    cart.unshift({productId:p.id, productName:p.name, unit:p.unit, qty:1, price:p.sellPrice, buyPrice:p.buyPrice, stock:p.stock});
+  }
+  document.getElementById('sale-search').value=''; document.getElementById('sale-search-dropdown').style.display='none';
+  renderCart();
+}
+
+function removeFromCart(id){ cart=cart.filter(c=>c.productId!==id); renderCart(); }
+
+function updateCartItem(id, field, val){
+  const item=cart.find(c=>c.productId===id); if(!item)return;
+  const num=parseFloat(val)||0;
+  if(field==='qty') item.qty=Math.max(0.1, Math.min(num, item.stock));
+  if(field==='price') item.price=Math.max(0, num);
+  renderCartSummary();
+}
+
+function renderCart(){
+  const wrap=document.getElementById('sale-cart-wrap');
+  const el=document.getElementById('sale-cart-items');
+  if(!cart.length){wrap.style.display='none'; renderCartSummary(); return;}
+  wrap.style.display='block';
+  el.innerHTML=cart.map(item=>`
+    <div class="cart-item">
+      <div class="cart-item-top"><strong>${item.productName}</strong><button class="cart-item-remove" onclick="removeFromCart(${item.productId})">✕</button></div>
+      <div class="cart-item-row">
+        <div class="form-group">
+          <label>পরিমাণ</label>
+          <input type="number" value="${item.qty}" placeholder="পরিমাণ" oninput="updateCartItem(${item.productId},'qty',this.value)">
+        </div>
+        <div class="cart-unit-box">${item.unit || 'টি'}</div>
+        <div class="form-group">
+          <label>বিক্রয় মূল্য</label>
+          <input type="number" value="${item.price}" placeholder="বিক্রয় মূল্য" oninput="updateCartItem(${item.productId},'price',this.value)">
+        </div>
+      </div>
+    </div>`).join('');
+  renderCartSummary();
+}
+
+function renderCartSummary(){
+  const totalRev=cart.reduce((a,c)=>a+c.qty*c.price,0);
+  document.getElementById('sale-total-display').textContent=bnMoney(totalRev);
+  const btn=document.getElementById('sale-submit-btn');
+
+  const payment = document.getElementById('sale-payment').value;
+  let isFormValid = cart.length > 0;
+
+  if (payment === 'due') {
+    const dueName = document.getElementById('due-customer-name').value.trim();
+    const duePhone = document.getElementById('due-customer-phone').value.trim();
+    if (!dueName || !duePhone) {
+      isFormValid = false;
+    }
+  }
+
+  btn.disabled = !isFormValid;
+  btn.style.opacity = isFormValid ? '1' : '.5';
+}
+
+document.addEventListener('click',e=>{
+  const dd=document.getElementById('sale-search-dropdown');
+  if(dd && !dd.contains(e.target) && e.target.id!=='sale-search') dd.style.display='none';
+});
+
+function addSale(){
+  if(!cart.length)return;
+  const payment=document.getElementById('sale-payment').value;
+
+  let customer = "";
+  let phone = "";
+  let address = "";
+  let initialPaid = 0;
+
+  if (payment === 'due') {
+    customer = document.getElementById('due-customer-name').value.trim();
+    phone = document.getElementById('due-customer-phone').value.trim();
+    address = document.getElementById('due-customer-address').value.trim();
+    initialPaid = parseFloat(document.getElementById('due-initial-paid').value) || 0;
+  } else {
+    customer = document.getElementById('sale-customer').value.trim() || 'নগদ গ্রাহক';
+  }
+
+  const ts=Date.now(); let totalAll=0; const names=[];
+
+  if(!state.sales) state.sales = [];
+  if(!state.dues) state.dues = [];
+
+  cart.forEach((item, i)=>{
+    const p=(state.products || []).find(x=>x.id===item.productId); if(!p)return;
+    const total=item.qty*item.price; const profit=item.qty*(item.price-item.buyPrice);
+    totalAll+=total; names.push(p.name);
+    state.sales.push({id:ts+i, productId:p.id, productName:p.name, unit:p.unit, qty:item.qty, price:item.price, total, profit, customer, payment, date:today(), ts:ts+i});
+    p.stock=Math.max(0, p.stock-item.qty);
+  });
+
+  if(payment==='due'){
+    const remaining = Math.max(0, totalAll - initialPaid);
+    const dueStatus = remaining <= 0 ? 'paid' : 'unpaid';
+    const paymentHistory = initialPaid > 0 ? [{ date: today(), amount: initialPaid }] : [];
+
+    state.dues.push({
+      id: ts,
+      customer: customer,
+      phone: phone,
+      address: address,
+      amount: totalAll,
+      remaining: remaining,
+      desc: names.join(', '),
+      date: today(),
+      status: dueStatus,
+      history: paymentHistory
+    });
+  }
+  save(); closeModal('sale-modal'); renderSales();
+}
+</script>
+</body>
+</html>

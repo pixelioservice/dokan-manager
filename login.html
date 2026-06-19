@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>দোকান管理器 - লগইন</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#0F6E56;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --bg:#F9F8F5;--white:#fff;
+  --text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;
+  --border:#D3D1C7;--radius:16px;--radius-sm:8px;
+}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.brand-section {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.brand-logo {
+  background: var(--green-light);
+  color: var(--green);
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+.brand-section h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+.brand-section p {
+  font-size: 13px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.toggle-container {
+  display: flex;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.toggle-btn {
+  flex: 1;
+  padding: 8px;
+  background: none;
+  border: none;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+.toggle-btn.active {
+  background: var(--green);
+  color: var(--white);
+}
+
+.form-box {
+  display: none;
+}
+.form-box.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text2);
+}
+.form-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  font-size: 14px;
+  outline: none;
+  font-family: 'Hind Siliguri', sans-serif;
+  transition: border-color 0.2s;
+}
+.form-input:focus {
+  border-color: var(--green);
+}
+
+.btn {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'Hind Siliguri', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--green-dark);
+}
+
+.alert-message {
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  display: none;
+}
+.alert-danger {
+  background: var(--red-light);
+  color: var(--red);
+  border: 1px solid #f5c6cb;
+}
+.alert-success {
+  background: var(--green-light);
+  color: var(--green-dark);
+  border: 1px solid #c3e6cb;
+}
+</style>
+</head>
+<body>
+
+<div class="login-container">
+
+  <div class="brand-section">
+    <div class="brand-logo">🏪</div>
+    <h1>দোকান ম্যানেজার</h1>
+    <p>আপনার ব্যবসার হিসাব রাখুন ক্লাউডে নিরাপদে</p>
+  </div>
+
+  <div class="toggle-container">
+    <button class="toggle-btn active" onclick="switchTab('login')">লগইন করুন</button>
+    <button class="toggle-btn" onclick="switchTab('register')">নতুন অ্যাকাউন্ট</button>
+  </div>
+
+  <div id="alert-box" class="alert-message"></div>
+
+  <div id="login-box" class="form-box active">
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label">ইমেইল ঠিকানা</label>
+        <input type="email" class="form-input" id="login-email" placeholder="example@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">পাসওয়ার্ড</label>
+        <input type="password" class="form-input" id="login-password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary">প্রবেশ করুন 🔓</button>
+    </form>
+  </div>
+
+  <div id="register-box" class="form-box">
+    <form id="register-form" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label class="form-label">দোকানের নাম</label>
+        <input type="text" class="form-input" id="reg-shop-name" placeholder="যেমন: সততা জেনারেল স্টোর" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ইমেইল ঠিকানা</label>
+        <input type="email" class="form-input" id="reg-email" placeholder="example@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">নতুন পাসওয়ার্ড (নূন্যতম ৬ অক্ষর)</label>
+        <input type="password" class="form-input" id="reg-password" placeholder="••••••••" minlength="6" required>
+      </div>
+      <button type="submit" class="btn btn-primary">অ্যাকাউন্ট তৈরি করুন ✨</button>
+    </form>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ⚠️ এখানে আপনার স্ক্রিনশট থেকে কপি করা কোডটি পেস্ট করে রিপ্লেস করুন
+const firebaseConfig = {
+  apiKey: "AIzaSyCjgxzZQvpqdUNnAlr81UEwp5E6Rf6kbq4",
+  authDomain: "dukan-manager-1aa7a.firebaseapp.com",
+  projectId: "dukan-manager-1aa7a",
+  storageBucket: "dukan-manager-1aa7a.firebasestorage.app",
+  messagingSenderId: "765717197902",
+  appId: "1:765717197902:web:21b0abeddba94e17eebf1f",
+  measurementId: "G-BS8TTQFBFN"
+};
+
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+function switchTab(type) {
+  const btns = document.querySelectorAll('.toggle-btn');
+  const boxes = document.querySelectorAll('.form-box');
+  const alertBox = document.getElementById('alert-box');
+  alertBox.style.display = 'none';
+
+  if(type === 'login') {
+    btns[0].classList.add('active');
+    btns[1].classList.remove('active');
+    document.getElementById('login-box').classList.add('active');
+    document.getElementById('register-box').classList.remove('active');
+  } else {
+    btns[0].classList.remove('active');
+    btns[1].classList.add('active');
+    document.getElementById('login-box').classList.remove('active');
+    document.getElementById('register-box').classList.add('active');
+  }
+}
+
+function showAlert(msg, isSuccess = false) {
+  const alertBox = document.getElementById('alert-box');
+  alertBox.textContent = msg;
+  alertBox.className = `alert-message ${isSuccess ? 'alert-success' : 'alert-danger'}`;
+  alertBox.style.display = 'block';
+}
+
+// ফায়ারবেস ক্লাউড লগইন লজিক
+function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const password = document.getElementById('login-password').value;
+
+  showAlert("লগইন হচ্ছে...", true);
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      showAlert("সফলভাবে লগইন হয়েছে! হোম পেজে নিয়ে যাওয়া হচ্ছে...", true);
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+    })
+    .catch((error) => {
+      showAlert("ভুল ইমেইল অথবা পাসওয়ার্ড! আবার চেষ্টা করুন।");
+    });
+}
+
+// ফায়ারবেস ক্লাউড রেজিস্ট্রেশন লজিক
+function handleRegister(e) {
+  e.preventDefault();
+  const shopName = document.getElementById('reg-shop-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const password = document.getElementById('reg-password').value;
+
+  showAlert("অ্যাকাউন্ট তৈরি হচ্ছে...", true);
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      // ফায়ারবেস ডাটাবেজে শপের নাম সেভ রাখা হচ্ছে
+      db.collection("users").doc(user.uid).set({
+        shopName: shopName,
+        createdAt: new Date()
+      }).then(() => {
+        showAlert("অ্যাকাউন্ট তৈরি সফল হয়েছে! অনুগ্রহ করে লগইন করুন।", true);
+        setTimeout(() => {
+          switchTab('login');
+          document.getElementById('login-email').value = email;
+        }, 1500);
+      });
+    })
+    .catch((error) => {
+      let errorMsg = "অ্যাকাউন্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।";
+      if(error.code === 'auth/email-already-in-use') {
+        errorMsg = "এই ইমেইলটি দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা আছে!";
+      }
+      showAlert(errorMsg);
+    });
+}
+</script>
+</body>
+</html>

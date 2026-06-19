@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>দোকান ম্যানেজার - বাকি</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#0F6E56;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --bg:#F9F8F5;--white:#fff;
+  --border:#D3D1C7;--radius:12px;--radius-sm:8px;
+  --text:#2C2C2A;--text3:#888780;--gray-light:#F1EFE8;
+}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100}
+.nav-btn{flex:1;padding:8px 4px 10px;background:none;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:11px;border-top:2px solid transparent}
+.nav-btn.active{color:var(--green);border-top-color:var(--green)}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.header{background:var(--green);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:700}
+.container{padding:12px 12px 80px}
+
+.top-bar{display:flex;gap:10px;margin-bottom:12px;align-items:center}
+.search-box{flex:1;position:relative}
+.search-input{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px 9px 34px;font-size:14px;outline:none;background:var(--white)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
+.filter-select{border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 10px;font-size:14px;background:var(--white);outline:none;min-width:110px}
+
+.list-item{background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--border);padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.item-left{flex:1;cursor:pointer}
+.item-name{font-size:15px;font-weight:600}
+.item-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.item-right{text-align:right}
+.due-amount{font-size:16px;font-weight:700;color:var(--red)}
+.due-amount.paid{color:var(--green-dark)}
+.btn-pay{background:var(--green-light);color:var(--green-dark);border:none;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;margin-top:4px;cursor:pointer}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 30px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:var(--gray-light);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer}
+
+.history-title{font-size:13px;font-weight:700;margin:12px 0 6px;color:var(--text)}
+.history-item{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px dashed var(--border)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 id="shop-name-header">দোকান ম্যানেজার</h1>
+</div>
+
+<div class="container">
+  <div class="top-bar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="search-input" placeholder="গ্রাহকের নাম বা মোবাইল..." oninput="renderDues()">
+    </div>
+    <select class="filter-select" id="status-filter" onchange="renderDues()">
+      <option value="unpaid">বাকি আছে</option>
+      <option value="paid">পরিশোধিত</option>
+      <option value="all">সব রেকর্ড</option>
+    </select>
+  </div>
+
+  <div id="due-list"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    হোম
+  </a>
+  <a href="sales2.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
+    বিক্রয়
+  </a>
+  <a href="inventory.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    স্টক
+  </a>
+  <a href="due.html" class="nav-btn active">
+    <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    বাকি
+  </a>
+  <a href="report.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    রিপোর্ট
+  </a>
+</nav>
+
+<div class="modal-overlay" id="due-details-modal">
+  <div class="modal">
+    <div class="modal-title">📄 বাকির বিস্তারিত বিবরণ <button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+// আপনার Firebase Config কোডটি এখানে দিন
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCjgxzZQvpqdUNnAlr81UEwp5E6Rf6kbq4",
+
+  authDomain: "dukan-manager-1aa7a.firebaseapp.com",
+
+  projectId: "dukan-manager-1aa7a",
+
+  storageBucket: "dukan-manager-1aa7a.firebasestorage.app",
+
+  messagingSenderId: "765717197902",
+
+  appId: "1:765717197902:web:21b0abeddba94e17eebf1f",
+
+  measurementId: "G-BS8TTQFBFN"
+
+};
+
+
+// Firebase ইনিশিয়ালাইজেশন
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let state = { settings:{shopName:'দোকান ম্যানেজার'}, products:[], sales:[], dues:[] };
+
+function save(){
+  localStorage.setItem('dukan_state', JSON.stringify(state));
+
+  // ক্লাউডে রিয়েল-টাইম সিঙ্কআপ
+  const user = auth.currentUser;
+  if(user){
+    db.collection("users").doc(user.uid).set(state)
+      .catch(e => console.error("ক্লাউড ব্যাকআপ ব্যর্থ হয়েছে:", e));
+  }
+}
+
+function bn(n){return String(Math.round(n)).replace(/[0-9]/g,c=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][c])}
+function bnMoney(n){return '৳'+bn(n)}
+function today(){return new Date().toISOString().split('T')[0]}
+function dateLabel(dateStr){ const d=new Date(dateStr); return bn(d.getDate())+' '+['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'][d.getMonth()]+', '+bn(d.getFullYear());}
+
+// 🔐 অথেন্টিকেশন এবং ক্লাউড ডেটা সিঙ্ক গেটওয়ে
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.collection("users").doc(user.uid).get().then(doc => {
+      if (doc.exists) {
+        state = doc.data();
+        localStorage.setItem('dukan_state', JSON.stringify(state));
+      } else {
+        const s = localStorage.getItem('dukan_state');
+        if(s){try{state=JSON.parse(s)}catch(e){}}
+      }
+      initializeAppUI();
+    }).catch(e => {
+      const s = localStorage.getItem('dukan_state');
+      if(s){try{state=JSON.parse(s)}catch(e){}}
+      initializeAppUI();
+    });
+  } else {
+    window.location.href = 'login.html';
+  }
+});
+
+function initializeAppUI(){
+  document.getElementById('shop-name-header').textContent = state.settings?.shopName || 'দোকান ম্যানেজার';
+  renderDues();
+}
+
+function renderDues(){
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const filterStatus = document.getElementById('status-filter').value;
+
+  const filtered = (state.dues || []).filter(d=>{
+    const matchQ = d.customer.toLowerCase().includes(q) || (d.phone && d.phone.includes(q));
+    const matchStatus = filterStatus==='all' || d.status===filterStatus;
+    return matchQ && matchStatus;
+  }).slice().reverse();
+
+  const el = document.getElementById('due-list');
+  if(!filtered.length){
+    el.innerHTML = '<div class="empty-state">কোনো বাকির রেকর্ড পাওয়া যায়নি</div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(d=>`
+    <div class="list-item">
+      <div class="item-left" onclick="showDetails(${d.id})">
+        <div class="item-name">${d.customer}</div>
+        <div class="item-sub">${d.phone || 'মোবাইল নেই'} · ${dateLabel(d.date)}</div>
+      </div>
+      <div class="item-right">
+        <div class="due-amount ${d.status==='paid'?'paid':''}">${d.status==='paid'?'পরিশোধিত':bnMoney(d.remaining)}</div>
+        ${d.status==='unpaid'?`<button class="btn-pay" onclick="payPartial(${d.id})">জমা নিন</button>`:''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function showDetails(id){
+  const due = (state.dues || []).find(x=>x.id===id);
+  if(!due) return;
+
+  let historyHtml = '';
+  if(due.history && due.history.length > 0){
+    historyHtml = `
+      <div class="history-title">🔄 জমার ইতিহাস:</div>
+      ${due.history.map(h=>`
+        <div class="history-item">
+          <span>📅 ${dateLabel(h.date)}</span>
+          <strong>🟢 +${bnMoney(h.amount)}</strong>
+        </div>
+      `).join('')}
+    `;
+  } else {
+    historyHtml = '<div class="item-sub" style="margin-top:6px;">পূর্বে কোনো আংশিক জমা নেওয়া হয়নি।</div>';
+  }
+
+  document.getElementById('modal-content').innerHTML = `
+    <div style="font-size:14px; line-height: 1.5;">
+      <p><strong>👤 নাম:</strong> ${due.customer}</p>
+      <p><strong>📞 মোবাইল:</strong> ${due.phone || 'নেই'}</p>
+      <p><strong>🏠 ঠিকানা:</strong> ${due.address || 'নেই'}</p>
+      <p><strong>🛒 বিবরণ:</strong> ${due.desc || 'পণ্য বিক্রয়'}</p>
+      <p><strong>📅 প্রথম বাকির তারিখ:</strong> ${dateLabel(due.date)}</p>
+      <hr style="margin:10px 0; border:0; border-top:1px dashed var(--border);">
+      <p><strong>💰 মোট বিল (Total Bill):</strong> ${bnMoney(due.amount)}</p>
+      ${historyHtml}
+      <div style="margin-top:12px; font-size:15px; background:var(--bg); padding:8px; border-radius:6px; display:flex; justify-content:space-between; border-top:1px dashed var(--border);">
+        <span>বর্তমান মোট বাকি:</span> <strong style="color:var(--red); font-weight:700;">${bnMoney(due.remaining)}</strong>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('due-details-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('due-details-modal').classList.remove('open');
+}
+
+function payPartial(id) {
+  const d = (state.dues || []).find(x => x.id === id);
+  if (!d) return;
+
+  const input = prompt(`গ্রাহকের বর্তমান বাকি ৳${bn(d.remaining)}\nকত টাকা জমা নিতে চান লিখুন:`);
+  if (input === null) return;
+
+  const amt = parseFloat(input);
+  if (isNaN(amt) || amt <= 0) {
+    alert("অনুগ্রহ করে সঠিক টাকার পরিমাণ লিখুন।");
+    return;
+  }
+
+  if (amt > d.remaining) {
+    alert("দুঃখিত! জমার পরিমাণ বর্তমান বাকির চেয়ে বেশি হতে পারবে না।");
+    return;
+  }
+
+  if (!d.history) d.history = [];
+
+  d.history.push({
+    date: today(),
+    amount: amt
+  });
+
+  d.remaining -= amt;
+
+  if (d.remaining <= 0) {
+    d.status = 'paid';
+  }
+
+  save();
+  renderDues();
+}
+</script>
+</body>
+</html>

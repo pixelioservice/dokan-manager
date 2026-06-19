@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>দোকান ম্যানেজার - স্টক</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-dark:#0F6E56;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --bg:#F9F8F5;--white:#fff;
+  --text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;
+  --border:#D3D1C7;--radius:12px;--radius-sm:8px;
+}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button,input,select{font-family:'Hind Siliguri',sans-serif}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100}
+.nav-btn{flex:1;padding:8px 4px 10px;background:none;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:11px;border-top:2px solid transparent}
+.nav-btn.active{color:var(--green);border-top-color:var(--green)}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.header{background:var(--green);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:700}
+.container{padding:12px 12px 80px}
+
+.top-bar{display:flex;gap:10px;margin-bottom:12px;align-items:center}
+.search-box{flex:1;position:relative}
+.search-input{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px 9px 34px;font-size:14px;outline:none;background:var(--white)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
+.filter-select{border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 10px;font-size:14px;background:var(--white);outline:none;min-width:110px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer}
+.btn-primary{background:var(--green);color:#fff;border:none}
+
+.list-item{background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--border);padding:12px;margin-bottom:8px;display:flex;flex-direction:column;gap:10px}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.item-name{font-size:15px;font-weight:600;flex:1}
+.item-cat{font-size:11px;background:var(--bg);color:var(--text2);padding:2px 8px;border-radius:10px;margin-top:2px;display:inline-block}
+.item-stock{text-align:right}
+.stock-badge{font-size:14px;font-weight:700;color:var(--green-dark)}
+.stock-badge.low{color:var(--amber)}
+.stock-badge.empty{color:var(--red)}
+.item-sub-text{font-size:11px;color:var(--text3);margin-top:1px}
+
+.item-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px dashed var(--border);padding-top:10px}
+.item-prices{display:flex;gap:12px;font-size:13px;color:var(--text2)}
+.item-prices strong{color:var(--text)}
+.item-actions{display:flex;gap:6px}
+.action-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:14px}
+.action-btn:active{background:var(--bg)}
+.action-btn.delete-btn {background: var(--red-light); color: var(--red); border-color: #f5c6cb;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 30px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:var(--gray-light);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none}
+
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.form-input{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;outline:none}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-full{width:100%}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 id="shop-name-header">দোকান ম্যানেজার</h1>
+</div>
+
+<div class="container">
+  <div class="top-bar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="search-input" placeholder="পণ্য খুঁজুন..." oninput="renderInventory()">
+    </div>
+    <select class="filter-select" id="cat-filter" onchange="renderInventory()">
+      <option value="all">সব ক্যাটাগরি</option>
+    </select>
+    <button class="btn btn-primary" onclick="openProductModal()">+ নতুন</button>
+  </div>
+
+  <div id="inventory-list"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    হোম
+  </a>
+  <a href="sales2.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.98 1.61h9.72a2 2 0 001.98-1.61L23 6H6"/></svg>
+    বিক্রয়
+  </a>
+  <a href="inventory.html" class="nav-btn active">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    স্টক
+  </a>
+  <a href="due.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    বাকি
+  </a>
+  <a href="report.html" class="nav-btn">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    রিপোর্ট
+  </a>
+</nav>
+
+<div class="modal-overlay" id="product-modal">
+  <div class="modal">
+    <div class="modal-title">📦 নতুন পণ্য যোগ করুন <button class="modal-close" onclick="closeProductModal()">✕</button></div>
+    <div class="form-group">
+      <label class="form-label">পণ্যের নাম</label>
+      <input type="text" class="form-input" id="prod-name" placeholder="যেমন: বাসমতী চাল">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">ক্যাটাগরি</label>
+        <input type="text" class="form-input" id="prod-cat" placeholder="যেমন: মুদিখানা" list="cat-suggestions">
+        <datalist id="cat-suggestions"></datalist>
+      </div>
+      <div class="form-group">
+        <label class="form-label">একক (Unit)</label>
+        <input type="text" class="form-input" id="prod-unit" placeholder="যেমন: কেজি/পিস">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">ক্রয় মূল্য (৳)</label>
+        <input type="number" class="form-input" id="prod-buy" placeholder="০">
+      </div>
+      <div class="form-group">
+        <label class="form-label">বিক্রয় মূল্য (৳)</label>
+        <input type="number" class="form-input" id="prod-sell" placeholder="০">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">প্রারম্ভিক স্টক (Opening Stock)</label>
+      <input type="number" class="form-input" id="prod-stock" placeholder="০">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="saveProduct()">পণ্য সংরক্ষণ করুন</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+<script>
+// আপনার Firebase Config কোডটি এখানে দিন
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCjgxzZQvpqdUNnAlr81UEwp5E6Rf6kbq4",
+
+  authDomain: "dukan-manager-1aa7a.firebaseapp.com",
+
+  projectId: "dukan-manager-1aa7a",
+
+  storageBucket: "dukan-manager-1aa7a.firebasestorage.app",
+
+  messagingSenderId: "765717197902",
+
+  appId: "1:765717197902:web:21b0abeddba94e17eebf1f",
+
+  measurementId: "G-BS8TTQFBFN"
+
+};
+
+
+// Firebase ইনিশিয়ালাইজেশন
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let state = { settings:{shopName:'দোকান ম্যানেজার',ownerName:'',lowStockThreshold:5}, products:[], sales:[], dues:[] };
+
+function save(){
+  localStorage.setItem('dukan_state', JSON.stringify(state));
+
+  // ক্লাউডে রিয়েল-টাইম সিঙ্কআপ
+  const user = auth.currentUser;
+  if(user){
+    db.collection("users").doc(user.uid).set(state)
+      .catch(e => console.error("ক্লাউড ব্যাকআপ ব্যর্থ হয়েছে:", e));
+  }
+}
+
+function bn(n){return String(n).replace(/[0-9]/g,c=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][c])}
+function bnMoney(n){return '৳'+bn(Math.round(n))}
+
+// 🔐 অথেন্টিকেশন এবং ক্লাউড ডেটা সিঙ্ক গেটওয়ে
+auth.onAuthStateChanged(user => {
+  if (user) {
+    db.collection("users").doc(user.uid).get().then(doc => {
+      if (doc.exists) {
+        state = doc.data();
+        localStorage.setItem('dukan_state', JSON.stringify(state));
+      } else {
+        const s = localStorage.getItem('dukan_state');
+        if(s){try{state=JSON.parse(s)}catch(e){}}
+      }
+      initializeAppUI();
+    }).catch(e => {
+      const s = localStorage.getItem('dukan_state');
+      if(s){try{state=JSON.parse(s)}catch(e){}}
+      initializeAppUI();
+    });
+  } else {
+    window.location.href = 'login.html';
+  }
+});
+
+function initializeAppUI(){
+  document.getElementById('shop-name-header').textContent = state.settings?.shopName || 'দোকান ম্যানেজার';
+  updateFilters();
+  renderInventory();
+}
+
+function updateFilters(){
+  const cats = [...new Set((state.products || []).map(p=>p.cat).filter(Boolean))];
+
+  const f = document.getElementById('cat-filter');
+  const val = f.value;
+  f.innerHTML = '<option value="all">সব ক্যাটাগরি</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  if(cats.includes(val)) f.value = val;
+
+  const dl = document.getElementById('cat-suggestions');
+  if(dl) dl.innerHTML = cats.map(c=>`<option value="${c}">`).join('');
+}
+
+function renderInventory(){
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const cat = document.getElementById('cat-filter').value;
+
+  const filtered = (state.products || []).filter(p=>{
+    const matchQ = p.name.toLowerCase().includes(q);
+    const matchCat = cat==='all' || p.cat===cat;
+    return matchQ && matchCat;
+  });
+
+  const el = document.getElementById('inventory-list');
+  if(!filtered.length){
+    el.innerHTML = '<div class="empty-state">কোনো পণ্য পাওয়া যায়নি</div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(p=>{
+    const isLow = p.stock <= (state.settings?.lowStockThreshold || 5);
+    const isEmpty = p.stock === 0;
+    let badgeClass = 'stock-badge';
+    if(isEmpty) badgeClass += ' empty';
+    else if(isLow) badgeClass += ' low';
+
+    return `
+      <div class="list-item">
+        <div class="item-top">
+          <div>
+            <div class="item-name">${p.name}</div>
+            <div class="item-cat">${p.cat || 'অন্যান্য'}</div>
+          </div>
+          <div class="item-stock">
+            <div class="${badgeClass}">${isEmpty ? 'স্টক শেষ' : bn(p.stock)+' '+p.unit}</div>
+            <div class="item-sub-text">বর্তমান স্টক</div>
+          </div>
+        </div>
+        <div class="item-bottom">
+          <div class="item-prices">
+            <div>ক্রয়: <strong>${bnMoney(p.buyPrice)}</strong></div>
+            <div>বিক্রয়: <strong>${bnMoney(p.sellPrice)}</strong></div>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn delete-btn" onclick="deleteProduct(${p.id})" title="ডিলিট">🗑️</button>
+            <button class="action-btn" onclick="addStockPrompt(${p.id})" title="স্টক যোগ">+📦</button>
+            <button class="action-btn" onclick="quickStock(${p.id},-1)">-১</button>
+            <button class="action-btn" onclick="quickStock(${p.id},1)">+১</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function quickStock(id, d){
+  const p = (state.products || []).find(x=>x.id===id);
+  if(p){
+    p.stock = Math.max(0, p.stock+d);
+    save();
+    renderInventory();
+  }
+}
+
+function addStockPrompt(id){
+  const p = (state.products || []).find(x=>x.id===id);
+  if(p){
+    const n = prompt(`'${p.name}' এর সাথে কত স্টক যোগ করতে চান?`);
+    if(n){
+      const amount = parseFloat(n);
+      if(!isNaN(amount)){
+        p.stock += amount;
+        save();
+        renderInventory();
+      }
+    }
+  }
+}
+
+function openProductModal(){ document.getElementById('product-modal').classList.add('open') }
+function closeProductModal(){ document.getElementById('product-modal').classList.remove('open') }
+
+function deleteProduct(id){
+  const confirmDelete = confirm("আপনি কি নিশ্চিতভাবে এই পণ্যটি ডিলিট করতে চান?");
+  if(confirmDelete){
+    state.products = (state.products || []).filter(p => p.id !== id);
+    save();
+    updateFilters();
+    renderInventory();
+  }
+}
+
+function saveProduct(){
+  const name = document.getElementById('prod-name').value.trim();
+  const cat = document.getElementById('prod-cat').value.trim();
+  const unit = document.getElementById('prod-unit').value.trim() || 'পিস';
+  const buy = parseFloat(document.getElementById('prod-buy').value)||0;
+  const sell = parseFloat(document.getElementById('prod-sell').value)||0;
+  const stock = parseFloat(document.getElementById('prod-stock').value)||0;
+
+  if(!name){
+    alert("অনুগ্রহ করে পণ্যের নাম লিখুন!");
+    return;
+  }
+
+  if(!state.products) state.products = [];
+
+  state.products.push({
+    id: Date.now(),
+    name,
+    cat,
+    buyPrice: buy,
+    sellPrice: sell,
+    stock,
+    unit
+  });
+
+  save();
+  closeProductModal();
+  updateFilters();
+  renderInventory();
+
+  // ইনপুট ফিল্ডগুলো রিসেট করা
+  document.getElementById('prod-name').value = '';
+  document.getElementById('prod-cat').value = '';
+  document.getElementById('prod-unit').value = '';
+  document.getElementById('prod-buy').value = '';
+  document.getElementById('prod-sell').value = '';
+  document.getElementById('prod-stock').value = '';
+}
+</script>
+</body>
+</html>
