@@ -162,26 +162,15 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-// আপনার Firebase Config কোডটি এখানে দিন
 const firebaseConfig = {
-
   apiKey: "AIzaSyCjgxzZQvpqdUNnAlr81UEwp5E6Rf6kbq4",
-
-  authDomain: "dukan-manager-1aa7a.firebaseapp.com",
-
-  projectId: "dukan-manager-1aa7a",
-
-  storageBucket: "dukan-manager-1aa7a.firebasestorage.app",
-
-  messagingSenderId: "765717197902",
-
-  appId: "1:765717197902:web:21b0abeddba94e17eebf1f",
-
-  measurementId: "G-BS8TTQFBFN"
-
+  authDomain: "hisab-khata-cf78c.firebaseapp.com",
+  projectId: "hisab-khata-cf78c",
+  storageBucket: "hisab-khata-cf78c.firebasestorage.app",
+  messagingSenderId: "305149303536",
+  appId: "1:305149303536:web:86f67fcb3c10a30b209867"
 };
 
-// Firebase ইনিশিয়ালাইজেশন
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -189,11 +178,21 @@ const db = firebase.firestore();
 let state = { settings:{shopName:'দোকান ম্যানেজার'}, sales:[], dues:[], products:[] };
 function bn(n){return String(Math.round(n)).replace(/[0-9]/g,c=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][c])}
 
-// 🔐 অথেন্টিকেশন এবং রিয়েল-টাইম ডাটা সিঙ্ক গেটওয়ে
+// ⚡ INSTANT LOCAL LOAD (ফাস্টেস্ট ক্যাশ রেন্ডার)
+const cachedState = localStorage.getItem('dukan_state');
+if (cachedState) {
+  try {
+    state = JSON.parse(cachedState);
+    setTimeout(initializeAppUI, 10);
+  } catch (e) {}
+}
+
+// 🔐 AUTHENTICATION GATEWAY (Fixing Overwrite/Reset Issue on Login & Logout)
 auth.onAuthStateChanged(user => {
   if (user) {
     db.collection("users").doc(user.uid).get().then(doc => {
-      if (doc.exists) {
+      // ⚠️ Critical Safe Check: সার্ভারে ডাটা থাকলেই কেবল স্টেট আপডেট হবে, ব্ল্যাঙ্ক ডাটা হলে নয়
+      if (doc.exists && doc.data().products && doc.data().products.length > 0) {
         state = doc.data();
         localStorage.setItem('dukan_state', JSON.stringify(state));
       } else {
@@ -207,7 +206,9 @@ auth.onAuthStateChanged(user => {
       initializeAppUI();
     });
   } else {
-    window.location.href = 'login.html';
+    if(!localStorage.getItem('dukan_state')){
+      window.location.href = 'login.html';
+    }
   }
 });
 
@@ -217,21 +218,14 @@ function initializeAppUI(){
 }
 
 function renderReport(){
-  // মূল গণনা সমূহ
   const totalRevenue = state.sales ? state.sales.reduce((a,s)=>a+s.total,0) : 0;
   const totalProfit = state.sales ? state.sales.reduce((a,s)=>a+s.profit,0) : 0;
-
-  // বাকি (Due) হিসাব (যা এখনো পরিশোধ করা হয়নি)
   const totalDue = state.dues ? state.dues.reduce((a,d)=>a+(parseFloat(d.remaining)||0),0) : 0;
-
-  // ক্যাশ ইন হ্যান্ড (মোট বিক্রয় থেকে বাকি বাদ দিলে যা থাকে)
   const cashInHand = Math.max(0, totalRevenue - totalDue);
 
-  // ইনভেন্টরি সামারি
   const totalItemsCount = state.products ? state.products.length : 0;
   const totalStockCount = state.products ? state.products.reduce((a,p)=>a+(parseFloat(p.stock)||0),0) : 0;
 
-  // চার্টের ড্যাশ-অফসেট হিসাব
   let saleOffset = 440;
   let profitOffset = 440;
   if (totalRevenue > 0) {
