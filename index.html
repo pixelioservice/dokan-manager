@@ -18,9 +18,7 @@
   --text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;
   --border:#D3D1C7;--radius:12px;--radius-sm:8px;
 }
-body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
-button{font-family:'Hind Siliguri',sans-serif;cursor:pointer;border:none;outline:none}
-input,select{font-family:'Hind Siliguri',sans-serif;font-size:14px}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100}
 .nav-btn{flex:1;padding:8px 4px 10px;background:none;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:11px;border-top:2px solid transparent}
@@ -29,70 +27,123 @@ input,select{font-family:'Hind Siliguri',sans-serif;font-size:14px}
 
 .header{background:var(--green);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:18px;font-weight:700}
-.logout-btn{background:rgba(255,255,255,0.15);color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.logout-btn{background:rgba(255,255,255,0.15);color:#fff;border:none;padding:6px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+
 .container{padding:12px 12px 80px}
+.section-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px}
 
-.dashboard-title{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:var(--text)}
-.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.dash-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;display:flex;flex-direction:column;gap:4px}
-.dash-card-title{font-size:12px;color:var(--text2);font-weight:500}
-.dash-card-value{font-size:18px;font-weight:700;color:var(--text)}
+/* Quick Stats Grid */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.stat-card.primary{background:var(--green-light);border-color:rgba(29,158,117,0.2)}
+.stat-card.primary .stat-val{color:var(--green-dark)}
+.stat-card.danger{background:var(--red-light);border-color:rgba(163,45,45,0.2)}
+.stat-card.danger .stat-val{color:var(--red)}
+.stat-label{font-size:11px;color:var(--text3);font-weight:500;margin-bottom:2px}
+.stat-val{font-size:18px;font-weight:700}
 
-.quick-action-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;margin-bottom:16px}
-.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-.action-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;text-decoration:none;color:var(--text);font-weight:600;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:6px}
+/* Menu Grid */
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.menu-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px 14px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:8px;transition:transform 0.1s}
+.menu-item:active{transform:scale(0.98)}
+.menu-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.menu-item.sales .menu-icon{background:var(--green-light);color:var(--green-dark)}
+.menu-item.inventory .menu-icon{background:var(--amber-light);color:var(--amber)}
+.menu-item.due .menu-icon{background:var(--red-light);color:var(--red)}
+.menu-item.report .menu-icon{background:var(--blue-light);color:var(--blue)}
+.menu-title{font-size:14px;font-weight:700}
+.menu-desc{font-size:11px;color:var(--text3)}
 
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
+/* Recent Log Card */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.card-title{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.log-list{display:flex;flex-direction:column;gap:10px}
+.log-item{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding-bottom:8px;border-bottom:1px solid #F1EFE8}
+.log-item:last-child{border-bottom:none;padding-bottom:0}
+
+/* Modals & Settings */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 30px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:17px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
-.modal-close{background:var(--gray-light);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 30px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:#F1EFE8;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none}
 .form-group{margin-bottom:12px}
 .form-label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
-.form-input{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;outline:none}
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--radius-sm);font-size:14px;font-weight:600}
+.form-input{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;outline:none;font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;border:none;cursor:pointer;width:100%}
 .btn-primary{background:var(--green);color:#fff}
 .btn-danger{background:var(--red);color:#fff}
-.btn-full{width:100%}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--text2)}
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1 id="shop-name-header">দোকান ম্যানেজার</h1>
-  <button class="logout-btn" onclick="handleLogout()">লগআউট</button>
+  <button class="logout-btn" onclick="logoutApp()">লগআউট</button>
 </div>
 
 <div class="container">
-  <div class="dashboard-title">📊 আজকের ড্যাশবোর্ড</div>
-
-  <div class="card-grid">
-    <div class="dash-card" style="border-left:4px solid var(--green)">
-      <span class="dash-card-title">আজকের মোট বিক্রি</span>
-      <span class="dash-card-value" id="dash-sales" style="color:var(--green-dark)">৳০</span>
+  <div class="stats-grid">
+    <div class="stat-card primary">
+      <div class="stat-label">আজকের বিক্রি</div>
+      <div class="stat-val" id="stat-today-sales">৳০</div>
     </div>
-    <div class="dash-card" style="border-left:4px solid var(--blue)">
-      <span class="dash-card-title">আজকের নগদ জমা</span>
-      <span class="dash-card-value" id="dash-cash" style="color:var(--blue)">৳০</span>
-    </div>
-    <div class="dash-card" style="border-left:4px solid var(--red)">
-      <span class="dash-card-title">আজকের বাকি খাতা</span>
-      <span class="dash-card-value" id="dash-due" style="color:var(--red)">৳০</span>
-    </div>
-    <div class="dash-card" style="border-left:4px solid var(--amber)">
-      <span class="dash-card-title">আজকের নিট লাভ</span>
-      <span class="dash-card-value" id="dash-profit" style="color:var(--amber)">৳০</span>
+    <div class="stat-card danger">
+      <div class="stat-label">মোট বাকি খাতা</div>
+      <div class="stat-val" id="stat-total-due">৳০</div>
     </div>
   </div>
 
-  <div class="quick-action-section">
-    <div class="dashboard-title" style="margin-bottom:0">⚡ কুইক অ্যাকশন</div>
-    <div class="quick-grid">
-      <a href="sales2.html" class="action-box">🛒 নতুন বিক্রয়</a>
-      <a href="inventory.html" class="action-box">📦 স্টক আপডেট</a>
-      <button class="action-box" onclick="openSettingsModal()" style="width:100%">⚙️ দোকান সেটিংস</button>
+  <div class="menu-grid">
+    <a href="sales2.html" class="menu-item sales">
+      <div class="menu-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 1.98 1.61h9.72a2 2 0 0 0 1.98-1.61L23 6H6"/></svg>
+      </div>
+      <div class="menu-title">নতুন বিক্রয়</div>
+      <div class="menu-desc">পণ্য বিক্রি ও রসিদ তৈরি</div>
+    </a>
+    <a href="inventory.html" class="menu-item inventory">
+      <div class="menu-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div class="menu-title">স্টক / ইনভেন্টরি</div>
+      <div class="menu-desc">মজুদ পণ্য ও দাম নিয়ন্ত্রণ</div>
+    </a>
+    <a href="due.html" class="menu-item due">
+      <div class="menu-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      </div>
+      <div class="menu-title">বাকি খাতা</div>
+      <div class="menu-desc">গ্রাহক বাকি ও জমা হিসাব</div>
+    </a>
+    <a href="report.html" class="menu-item report">
+      <div class="menu-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <div class="menu-title">রিপোর্ট ও লাভ</div>
+      <div class="menu-desc">দৈনিক ও মাসিক নিট লাভ</div>
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>📝 সাম্প্রতিক বেচাকেনা</span>
+      <a href="report.html" style="font-size:12px; color:var(--green); text-decoration:none;">সব দেখুন →</a>
     </div>
+    <div class="log-list" id="recent-sales-list">
+      </div>
+  </div>
+
+  <div class="card" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="openModal('settings-modal')">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <span style="font-size:20px;">⚙️</span>
+      <div>
+        <div style="font-size:14px; font-weight:700;">দোকান সেটিংস</div>
+        <div style="font-size:11px; color:var(--text3);">নাম পরিবর্তন ও ডাটা ফ্যাক্টরি রিসেট</div>
+      </div>
+    </div>
+    <span style="color:var(--text3); font-size:14px;">➔</span>
   </div>
 </div>
 
@@ -122,34 +173,38 @@ input,select{font-family:'Hind Siliguri',sans-serif;font-size:14px}
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
     <div class="modal-title">⚙️ দোকান সেটিংস <button class="modal-close" onclick="closeModal('settings-modal')">✕</button></div>
+
     <div class="form-group">
       <label class="form-label">দোকানের নাম</label>
       <input type="text" class="form-input" id="set-shop-name">
     </div>
-    <div class="form-group">
-      <label class="form-label">কম স্টকের অ্যালার্ট লিমিট (Low Stock Alert)</label>
-      <input type="number" class="form-input" id="set-low-stock">
+    <div class="form-group" style="margin-bottom:20px;">
+      <label class="form-label">সীমিত স্টক অ্যালার্ট থ্রেশহোল্ড (পিস/কেজি)</label>
+      <input type="number" class="form-input" id="set-stock-alert">
     </div>
-    <button class="btn btn-primary btn-full" onclick="saveSettings()" style="margin-bottom:16px">সেটিংস সংরক্ষণ করুন</button>
 
-    <hr style="border:0; border-top:1px dashed var(--border); margin-bottom:16px;">
-
-    <div style="background:#fff5f5; border:1px solid #f8d7da; padding:12px; border-radius:var(--radius-sm);">
-      <h4 style="color:var(--red); font-size:14px; margin-bottom:4px;">⚠️ বিপদজনক জোন (Danger Zone)</h4>
-      <p style="font-size:12px; color:var(--text2); margin-bottom:10px;">ফ্যাক্টরি রিসেট করলে আপনার সব পেজের সমস্ত ডাটা (পণ্য, বিক্রি, বাকি) চিরতরে মুছে যাবে এবং প্রথম থেকে শুরু হবে।</p>
-      <button class="btn btn-danger btn-full" id="reset-init-btn" onclick="openFactoryResetModal()">Factory Reset</button>
-    </div>
+    <button class="btn btn-primary" onclick="saveSettings()" style="margin-bottom:12px;">সেটিংস সংরক্ষণ করুন</button>
+    <button class="btn btn-outline" onclick="openResetConfirm()" style="color:var(--red); border-color:rgba(163,45,45,0.2)">⚠️ ফ্যাক্টরি রিসেট (ডাটা মুছুন)</button>
   </div>
 </div>
 
-<div class="modal-overlay" id="reset-confirm-modal" style="z-index: 300;">
-  <div class="modal" style="border-radius: 16px 16px 16px 16px; width:92%; max-width:400px; margin:auto; margin-bottom: 20vh;">
-    <div class="modal-title" style="color:var(--red);">⚠️ রিসেট নিশ্চিত করুন <button class="modal-close" onclick="closeModal('reset-confirm-modal')">✕</button></div>
-    <p style="font-size:13px; margin-bottom:12px; color:var(--text);">সব ডাটা ডিলিট করতে আপনার অ্যাকাউন্টের **লগইন পাসওয়ার্ডটি** লিখুন:</p>
-    <div class="form-group">
-      <input type="password" class="form-input" id="reset-password-input" placeholder="আপনার পাসওয়ার্ড দিন">
+<div class="modal-overlay" id="reset-confirm-modal" style="z-index:210; background:rgba(0,0,0,0.6);">
+  <div class="modal" style="border-radius:16px; margin:auto 16px 24px; max-width:400px; padding:24px 18px;">
+    <div style="text-align:center; margin-bottom:16px;">
+      <span style="font-size:40px;">⚠️</span>
+      <h3 style="font-size:16px; font-weight:700; margin-top:8px; color:var(--red);">আপনি কি নিশ্চিতভাবে সব মুছতে চান?</h3>
+      <p style="font-size:12px; color:var(--text3); margin-top:6px; line-height:1.5;">এই অ্যাকশনটি সম্পূর্ণ ইরেস করবে। আপনার ক্লাউড ডাটাবেজ এবং লোকাল স্টোরেজের সমস্ত পণ্য, বিক্রির খাতা ও বাকির রেকর্ড চিরতরে ডিলিট হয়ে যাবে। এটি আর ফেরত আনা সম্ভব নয়।</p>
     </div>
-    <button class="btn btn-danger btn-full" id="reset-submit-btn" onclick="processFactoryReset()">সম্পূর্ণ ডাটা মুছে ফেলুন</button>
+
+    <div class="form-group" style="margin-bottom:18px;">
+      <label class="form-label" style="text-align:left; font-size:12px; color:var(--text2)">নিশ্চিত করতে আপনার অ্যাকাউন্টের পাসওয়ার্ড লিখুন:</label>
+      <input type="password" class="form-input" id="reset-auth-pass" placeholder="আপনার কারেন্ট পাসওয়ার্ড দিন">
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline" onclick="closeModal('reset-confirm-modal')" style="flex:1;">বাতিল</button>
+      <button class="btn btn-danger" id="factory-reset-submit-btn" onclick="executeHardFactoryReset()" style="flex:1.2;">সম্পূর্ণ ডাটা মুছে ফেলুন</button>
+    </div>
   </div>
 </div>
 
@@ -158,7 +213,6 @@ input,select{font-family:'Hind Siliguri',sans-serif;font-size:14px}
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <script>
-// আপনার Firebase Config কোডটি এখানে দিন
 const firebaseConfig = {
   apiKey: "AIzaSyCjgxzZQvpqdUNnAlr81UEwp5E6Rf6kbq4",
   authDomain: "hisab-khata-cf78c.firebaseapp.com",
@@ -168,23 +222,44 @@ const firebaseConfig = {
   appId: "1:305149303536:web:86f67fcb3c10a30b209867"
 };
 
-
-// Firebase ইনিশিয়ালাইজেশন
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 let state = { settings:{shopName:'দোকান ম্যানেজার', lowStockThreshold:5}, products:[], sales:[], dues:[] };
 
+function save(){
+  // ⚠️ Empty or broken state jeno mistake-eo save na hoye pure logic control korbe
+  if(!state || (!state.products && !state.sales && !state.dues)) return;
+
+  localStorage.setItem('dukan_state', JSON.stringify(state));
+
+  const user = auth.currentUser;
+  if(user && state.products){
+    db.collection("users").doc(user.uid).set(state)
+      .catch(e => console.error("ক্লাউড ব্যাকআপ ব্যর্থ হয়েছে:", e));
+  }
+}
+
 function bn(n){return String(Math.round(n)).replace(/[0-9]/g,c=>['০','১','২','৩','৪','৫','৬','৭','৮','৯'][c])}
 function bnMoney(n){return '৳'+bn(n)}
-function today(){return new Date().toISOString().split('T')[0]}
+function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 
-// 🔐 অথেন্টিকেশন গেটওয়ে এবং ডেটা লোড
+// ⚡ INSTANT LOCAL LOAD (ফাস্টেস্ট ক্যাশ রেন্ডার)
+const cachedState = localStorage.getItem('dukan_state');
+if (cachedState) {
+  try {
+    state = JSON.parse(cachedState);
+    setTimeout(initializeAppUI, 10);
+  } catch (e) {}
+}
+
+// 🔐 AUTHENTICATION GATEWAY (Fixing Overwrite/Reset Issue on Login & Logout)
 auth.onAuthStateChanged(user => {
   if (user) {
     db.collection("users").doc(user.uid).get().then(doc => {
-      if (doc.exists) {
+      // ⚠️ Critical Safeguard: Server-e data thaklei shubhumatro state update hobe, blank data-te noy
+      if (doc.exists && doc.data().products && doc.data().products.length > 0) {
         state = doc.data();
         localStorage.setItem('dukan_state', JSON.stringify(state));
       } else {
@@ -198,98 +273,103 @@ auth.onAuthStateChanged(user => {
       initializeAppUI();
     });
   } else {
-    window.location.href = 'login.html';
+    if(!localStorage.getItem('dukan_state')){
+      window.location.href = 'login.html';
+    }
   }
 });
 
 function initializeAppUI(){
   document.getElementById('shop-name-header').textContent = state.settings?.shopName || 'দোকান ম্যানেজার';
-  calculateDashboardStats();
-}
 
-function calculateDashboardStats(){
-  const t = today();
-  const todaySalesList = (state.sales || []).filter(s => s.date === t);
-  const todayDuesList = (state.dues || []).filter(d => d.date === t);
-
-  const totalSales = todaySalesList.reduce((a,s) => a + s.total, 0);
-  const totalProfit = todaySalesList.reduce((a,s) => a + s.profit, 0);
-  const totalDue = todayDuesList.reduce((a,d) => a + (parseFloat(d.remaining) || 0), 0);
-  const totalCash = Math.max(0, totalSales - totalDue);
-
-  document.getElementById('dash-sales').textContent = bnMoney(totalSales);
-  document.getElementById('dash-cash').textContent = bnMoney(totalCash);
-  document.getElementById('dash-due').textContent = bnMoney(totalDue);
-  document.getElementById('dash-profit').textContent = bnMoney(totalProfit);
-}
-
-function openModal(id){document.getElementById(id).classList.add('open')}
-function closeModal(id){document.getElementById(id).classList.remove('open')}
-
-function openSettingsModal(){
+  // সেটিংস ফর্মের ডিফল্ট ভ্যালু ফিলআপ
   document.getElementById('set-shop-name').value = state.settings?.shopName || 'দোকান ম্যানেজার';
-  document.getElementById('set-low-stock').value = state.settings?.lowStockThreshold || 5;
-  openModal('settings-modal');
+  document.getElementById('set-stock-alert').value = state.settings?.lowStockThreshold || 5;
+
+  calculateHomeStats();
 }
+
+function calculateHomeStats(){
+  const t = today();
+  const sales = state.sales || [];
+  const dues = state.dues || [];
+
+  // ১. আজকের টোটাল সেলস ক্যালকুলেশন
+  let todaySalesTotal = 0;
+  sales.forEach(s => { if(s.date === t) todaySalesTotal += (s.total || 0) });
+  document.getElementById('stat-today-sales').textContent = bnMoney(todaySalesTotal);
+
+  // ২. লাইভ একটিভ টোটাল বাকি ক্যালকুলেশন
+  let totalDueAmt = 0;
+  dues.forEach(d => { totalDueAmt += (d.remaining || 0) });
+  document.getElementById('stat-total-due').textContent = bnMoney(totalDueAmt);
+
+  // ৩. শেষ ৩টি সাম্প্রতিক বিক্রয়ের তালিকা রেন্ডারিং
+  const recentSalesList = document.getElementById('recent-sales-list');
+  const reversedSales = sales.slice().reverse().slice(0, 3);
+
+  if(!reversedSales.length){
+    recentSalesList.innerHTML = '<div style="text-align:center; padding:10px 0; font-size:12px; color:var(--text3);">এখনো কোনো বিক্রি করা হয়নি।</div>';
+    return;
+  }
+
+  recentSalesList.innerHTML = reversedSales.map(s => {
+    return `
+      <div class="log-item">
+        <div>
+          <div style="font-weight:600; color:var(--text);">${s.productName || 'পণ্য'} x${bn(s.qty || 1)}</div>
+          <div style="font-size:11px; color:var(--text3); margin-top:2px;">👤 ${s.customer || 'নগদ গ্রাহক'} · 🕒 ${s.date === t ? 'আজ' : s.date}</div>
+        </div>
+        <strong style="color:var(--green-dark); font-weight:700;">+${bnMoney(s.total || 0)}</strong>
+      </div>
+    `;
+  }).join('');
+}
+
+function openModal(id){ document.getElementById(id).classList.add('open') }
+function closeModal(id){ document.getElementById(id).classList.remove('open') }
 
 function saveSettings(){
+  const newName = document.getElementById('set-shop-name').value.trim() || 'দোকান ম্যানেজার';
+  const newThreshold = parseInt(document.getElementById('set-stock-alert').value) || 5;
+
   if(!state.settings) state.settings = {};
-  state.settings.shopName = document.getElementById('set-shop-name').value.trim() || 'দোকান ম্যানেজার';
-  state.settings.lowStockThreshold = parseInt(document.getElementById('set-low-stock').value) || 5;
+  state.settings.shopName = newName;
+  state.settings.lowStockThreshold = newThreshold;
 
-  localStorage.setItem('dukan_state', JSON.stringify(state));
-  const user = auth.currentUser;
-  if(user){
-    db.collection("users").doc(user.uid).set(state)
-      .then(() => {
-        closeModal('settings-modal');
-        initializeAppUI();
-      });
-  }
+  save();
+  closeModal('settings-modal');
+  initializeAppUI();
 }
 
-function handleLogout(){
-  if(confirm("আপনি কি নিশ্চিতভাবে লগআউট করতে চান?")){
-    auth.signOut().then(() => {
-      localStorage.removeItem('dukan_state');
-      window.location.href = 'login.html';
-    });
-  }
-}
-
-// 💥 ফ্যাক্টরি রিসেট ফাংশনসমূহ
-function openFactoryResetModal(){
-  document.getElementById('reset-password-input').value = '';
+function openResetConfirm(){
+  document.getElementById('reset-auth-pass').value = '';
   openModal('reset-confirm-modal');
 }
 
-function processFactoryReset() {
-  const passwordInput = document.getElementById('reset-password-input');
-  const submitBtn = document.getElementById('reset-submit-btn');
-  const password = passwordInput.value;
+function executeHardFactoryReset(){
+  const passInput = document.getElementById('reset-auth-pass').value;
+  const submitBtn = document.getElementById('factory-reset-submit-btn');
 
-  if (!password) {
-    alert("❌ অনুগ্রহ করে আপনার লগইন পাসওয়ার্ডটি দিন!");
+  if(!passInput){
+    alert("অ্যাকশনটি নিশ্চিত করতে আপনার পাসওয়ার্ড দেওয়া বাধ্যতামূলক!");
     return;
   }
 
   const user = auth.currentUser;
-  if (!user) {
-    alert("❌ ইউজার সেশন পাওয়া যায়নি। অনুগ্রহ করে আবার লগইন করুন।");
+  if(!user){
+    alert("কোনো লগইন ইউজার পাওয়া যায়নি। অনুগ্রহ করে আবার লগইন করুন।");
     return;
   }
 
-  // বাটনটি ডিজেবল করা ও লোডিং টেক্সট দেওয়া জাতে ইউজার বুঝতে পারে ব্যাকগ্রাউন্ডে কাজ চলছে
   submitBtn.disabled = true;
-  submitBtn.textContent = "রিসেট হচ্ছে, দয়া করে অপেক্ষা করুন...";
+  submitBtn.textContent = "ডাটা মোছা হচ্ছে...";
   submitBtn.style.opacity = "0.6";
 
-  // পাসওয়ার্ড রি-অথেন্টিকেশন চেক
-  const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
+  const credential = firebase.auth.EmailAuthProvider.credential(user.email, passInput);
 
   user.reauthenticateWithCredential(credential)
     .then(() => {
-      // পাসওয়ার্ড সঠিক হলে স্টেট একদম খালি (ফ্যাক্টরি মোড) করে দেওয়া
       state = {
         settings: {
           shopName: 'দোকান ম্যানেজার',
@@ -300,16 +380,11 @@ function processFactoryReset() {
         dues: []
       };
 
-      // লোকাল স্টোরেজ সম্পূর্ণ ক্লিয়ার ও রিসেট করা
       localStorage.setItem('dukan_state', JSON.stringify(state));
 
-      // ক্লাউড ফায়ারবেস ডাটাবেজ আপডেট নিশ্চিত করা
       db.collection("users").doc(user.uid).set(state)
         .then(() => {
-          // রিয়েল ব্রাউজার প্রম্পট দিয়ে সাকসেস মেসেজ নিশ্চিত করা
-          alert("💥 Factory Reset Done!\n\nআপনার সমস্ত পেজের ডাটা ক্লাউড ও লোকাল স্টোরেজ থেকে চিরতরে মুছে ফেলা হয়েছে। অ্যাপটি সফলভাবে প্রথম থেকে শুরু হয়েছে।");
-
-          // বাটন ও মোডাল রিসেট
+          alert("💥 Factory Reset Done!\n\nআপনার সমস্ত পেজের ডাটা ক্লাউড ও local storage থেকে চিরতরে মুছে ফেলা হয়েছে।");
           submitBtn.disabled = false;
           submitBtn.textContent = "সম্পূর্ণ ডাটা মুছে ফেলুন";
           submitBtn.style.opacity = "1";
@@ -322,15 +397,24 @@ function processFactoryReset() {
           submitBtn.disabled = false;
           submitBtn.textContent = "সম্পূর্ণ ডাটা মুছে ফেলুন";
           submitBtn.style.opacity = "1";
-          alert("❌ ডাটাবেজ সার্ভার রিসেট করতে ব্যর্থ হয়েছে: " + err.message);
+          alert("❌ ডাটাবেজ রিসেট ব্যর্থ: " + err.message);
         });
     })
     .catch(error => {
       submitBtn.disabled = false;
       submitBtn.textContent = "সম্পূর্ণ ডাটা মুছে ফেলুন";
       submitBtn.style.opacity = "1";
-      alert("❌ ভুল পাসওয়ার্ড! পাসওয়ার্ডটি মিলছে না, তাই ডাটা রিসেট করা সম্ভব হয়নি।");
+      alert("❌ ভুল পাসওয়ার্ড! রিসেট অ্যাকশনটি বাতিল করা হয়েছে।");
     });
+}
+
+function logoutApp(){
+  const c = confirm("আপনি কি নিশ্চিতভাবে লগআউট করতে চান?");
+  if(c){
+    auth.signOut().then(() => {
+      window.location.href = 'login.html';
+    });
+  }
 }
 </script>
 </body>
